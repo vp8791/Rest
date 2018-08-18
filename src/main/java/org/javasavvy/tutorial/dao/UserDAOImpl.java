@@ -1,5 +1,7 @@
 package org.javasavvy.tutorial.dao;
 
+import java.util.Date;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -10,38 +12,60 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service("userDAO")
-@Transactional(propagation=Propagation.REQUIRED)
+@Transactional(propagation = Propagation.REQUIRED)
 public class UserDAOImpl implements UserDAO {
-	
-	
+
 	@PersistenceContext
 	public EntityManager entityManager;
 
-	
-	@Transactional(readOnly=false)
+	@Transactional(readOnly = false)
 	public User addUser(User user) {
 		entityManager.persist(user);
 		return user;
 	}
 
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public User getUser(long userId) {
-		 Query query  = entityManager.createQuery("select user from User user where user.userId=:userId");
-		 query.setParameter("userId", userId);
-		 return (User)query.getSingleResult();
+		Query query = entityManager.createQuery("select user from User user where user.userId=:userId");
+		query.setParameter("userId", userId);
+		return (User) query.getSingleResult();
 	}
 
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public User getUser(String email) {
-		return (User) entityManager.createQuery("select user from User user where"
-				+ " user.email=:email").setParameter("email", email).getSingleResult();
+		return (User) entityManager.createQuery("select user from User user where" + " user.email=:email")
+				.setParameter("email", email).getSingleResult();
 	}
 
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public User getUserById(long userId) {
-		
-		 Query query  = entityManager.createQuery("select user from User user where user.userId=:userId");
-		 query.setParameter("userId", userId);
-		 return (User)query.getSingleResult();
+
+		Query query = entityManager.createQuery("select user from User user where user.userId=:userId");
+		query.setParameter("userId", userId);
+		return (User) query.getSingleResult();
+	}
+
+	@Override
+	public User updateUser(User user) {
+		Query query = entityManager.createQuery("select user from User user where user.userId=:userId");
+		query.setParameter("userId", user.getUserId());
+		User updateableUser = (User) query.getSingleResult();
+		updateableUser.setEmail(user.getEmail());
+		updateableUser.setFirstName(user.getFirstName());
+		updateableUser.setLastName(user.getLastName());
+		updateableUser.setSex(user.getSex());
+		updateableUser.setPassword(user.getPassword());
+		updateableUser.setUpdatedDate(new Date(System.currentTimeMillis()));
+		entityManager.merge(updateableUser);
+		return updateableUser;
+	}
+
+	@Override
+	public User deleteUser(long userId) {
+		Query query = entityManager.createQuery("select user from User user where user.userId=:userId");
+		query.setParameter("userId", userId);
+		User deletableUser = (User) query.getSingleResult();
+		entityManager.remove(deletableUser);
+		return deletableUser;
 	}
 }

@@ -1,6 +1,6 @@
 package org.javasavvy.rest.modal;
 
-public class UserModal {
+public class UserModel {
 	
 	private String firstName;
 	private String lastName;
@@ -45,6 +45,13 @@ public class UserModal {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	@Override
+	public String toString() {
+		return "UserModel [firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", sex=" + sex
+				+ ", password=" + password + ", userId=" + userId + "]";
+	}
+	
+	
 	
 	
 

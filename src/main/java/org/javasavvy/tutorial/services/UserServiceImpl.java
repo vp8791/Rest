@@ -27,8 +27,7 @@ public class UserServiceImpl implements UserService {
 		return userDAO.getUser(email);
 	}
 
-	public User addUser(String firstName,String lastName,String email,String sex,String password) {
-		
+	public User addUser(String firstName,String lastName,String email,String sex,String password) {		
 		User user = new User();
 		user.setCreateDate(new Date());
 		user.setUpdatedDate(new Date());
@@ -38,9 +37,25 @@ public class UserServiceImpl implements UserService {
 		user.setSex(sex);
 		user.setPassword(password);
 		
-		
-		
 		return userDAO.addUser(user);
+	}
+
+	@Override
+	public User updateUser(String firstName, String lastName, String email, String sex, String password,
+			long userId) {
+		User user = new User();
+		user.setEmail(email);
+		user.setFirstName(firstName);
+		user.setLastName(lastName);
+		user.setSex(sex);
+		user.setPassword(password);
+		user.setUserId(userId);
+		return userDAO.updateUser(user);
+	}
+
+	@Override
+	public User deleteUser(long userId) {
+		return userDAO.deleteUser(userId);
 	}
 
 

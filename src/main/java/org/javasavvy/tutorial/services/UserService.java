@@ -10,5 +10,7 @@ public interface UserService {
 	public User getUser(long userId);
 	public User getUser(String email);
 	public User addUser(String firstName,String lastName,String email,String sex,String password);
+	public User updateUser(String firstName,String lastName,String email,String sex,String password, long userId);
+	public User deleteUser(long userId);
 
 }

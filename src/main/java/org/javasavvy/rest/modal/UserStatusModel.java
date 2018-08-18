@@ -1,10 +1,10 @@
 package org.javasavvy.rest.modal;
 
-public class UserStatusModal {
+public class UserStatusModel {
 	
 	private int status;
 	private String message;
-	private UserModal user;
+	private UserModel user;
 	public int getStatus() {
 		return status;
 	}
@@ -17,10 +17,10 @@ public class UserStatusModal {
 	public void setMessage(String message) {
 		this.message = message;
 	}
-	public UserModal getUser() {
+	public UserModel getUser() {
 		return user;
 	}
-	public void setUser(UserModal user) {
+	public void setUser(UserModel user) {
 		this.user = user;
 	}
 	

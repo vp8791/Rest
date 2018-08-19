@@ -81,4 +81,15 @@ public class UserDAOImpl implements UserDAO {
 		boolean isUserPresent = query.getResultList().isEmpty();	
 		return !isUserPresent;
 	}
+
+	@Override
+	public boolean isUserAuthorized(String user, String password) {	
+		Query query = entityManager.createQuery("select validuser from ValidUsers validuser where " + 
+				" validuser.userid=:user and validuser.password=:password ");
+		query.setParameter("user", user);
+		query.setParameter("password", password);
+		boolean isAuthorized = query.getResultList().isEmpty();	
+		return !isAuthorized;
+		
+	}
 }

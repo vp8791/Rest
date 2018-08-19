@@ -16,5 +16,8 @@ public interface ResourceStatuses {
 	
 	public static int RESOURCE_DB_FAILED= 208;
 	public static int RESOURCE_UNKNOWN_ERROR= 209;
+	
+	public static int RESOURCE_UNAUTHORIZED_USER= 210;
+	public static int RESOURCE_NO_HEADERS= 211;
 
 }

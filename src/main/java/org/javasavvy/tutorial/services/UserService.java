@@ -13,5 +13,6 @@ public interface UserService {
 	public User addUser(String firstName,String lastName,String email,String sex,String password);
 	public User updateUser(String firstName,String lastName,String email,String sex,String password, long id);
 	public User deleteUser(long id);
+	public boolean isUserAuthorized(String user, String password);
 
 }

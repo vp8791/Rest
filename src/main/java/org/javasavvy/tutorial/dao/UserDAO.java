@@ -13,4 +13,5 @@ public interface UserDAO {
 	public User getUser(String email);
 	public User updateUser(User user);
 	public User deleteUser(long id);
+	public boolean isUserAuthorized(String user, String password);
 }

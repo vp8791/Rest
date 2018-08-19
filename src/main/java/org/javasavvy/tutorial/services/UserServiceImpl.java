@@ -63,5 +63,10 @@ public class UserServiceImpl implements UserService {
 		return userDAO.isUserPresent(id);
 	}
 
+	@Override
+	public boolean isUserAuthorized(String user, String password) {
+		return userDAO.isUserAuthorized(user, password);
+	}
+
 
 }

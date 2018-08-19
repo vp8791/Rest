@@ -20,14 +20,16 @@ public class UserDAOImpl implements UserDAO {
 
 	@Transactional(readOnly = false)
 	public User addUser(User user) {
+		System.out.println("1.Persisting User in UserDAOImpl:" + user);
 		entityManager.persist(user);
+		System.out.println("2.Persisting User in UserDAOImpl:" + user);
 		return user;
 	}
 
 	@Transactional(readOnly = true)
-	public User getUser(long userId) {
-		Query query = entityManager.createQuery("select user from User user where user.userId=:userId");
-		query.setParameter("userId", userId);
+	public User getUser(long id) {
+		Query query = entityManager.createQuery("select user from User user where user.id=:id");
+		query.setParameter("id", id);
 		return (User) query.getSingleResult();
 	}
 
@@ -38,17 +40,18 @@ public class UserDAOImpl implements UserDAO {
 	}
 
 	@Transactional(readOnly = true)
-	public User getUserById(long userId) {
+	public User getUserById(long id) {
 
-		Query query = entityManager.createQuery("select user from User user where user.userId=:userId");
-		query.setParameter("userId", userId);
+		Query query = entityManager.createQuery("select user from User user where user.id=:id");
+		query.setParameter("id", id);
 		return (User) query.getSingleResult();
 	}
 
 	@Override
+	@Transactional(readOnly = false)
 	public User updateUser(User user) {
-		Query query = entityManager.createQuery("select user from User user where user.userId=:userId");
-		query.setParameter("userId", user.getUserId());
+		Query query = entityManager.createQuery("select user from User user where user.id=:id");
+		query.setParameter("id", user.getId());
 		User updateableUser = (User) query.getSingleResult();
 		updateableUser.setEmail(user.getEmail());
 		updateableUser.setFirstName(user.getFirstName());
@@ -61,11 +64,21 @@ public class UserDAOImpl implements UserDAO {
 	}
 
 	@Override
-	public User deleteUser(long userId) {
-		Query query = entityManager.createQuery("select user from User user where user.userId=:userId");
-		query.setParameter("userId", userId);
+	@Transactional(readOnly = false)
+	public User deleteUser(long id) {
+		Query query = entityManager.createQuery("select user from User user where user.id=:id");
+		query.setParameter("id", id);
 		User deletableUser = (User) query.getSingleResult();
 		entityManager.remove(deletableUser);
 		return deletableUser;
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public boolean isUserPresent(long id) {
+		Query query = entityManager.createQuery("select user from User user where user.id=:id");
+		query.setParameter("id", id);
+		boolean isUserPresent = query.getResultList().isEmpty();	
+		return !isUserPresent;
 	}
 }

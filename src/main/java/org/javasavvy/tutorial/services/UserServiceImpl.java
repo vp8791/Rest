@@ -19,8 +19,8 @@ public class UserServiceImpl implements UserService {
 	private UserDAO userDAO;
 	
 	
-	public User getUser(long userId) {
-		return userDAO.getUser(userId);
+	public User getUser(long id) {
+		return userDAO.getUser(id);
 	}
 
 	public User getUser(String email) {
@@ -42,20 +42,25 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User updateUser(String firstName, String lastName, String email, String sex, String password,
-			long userId) {
+			long id) {
 		User user = new User();
 		user.setEmail(email);
 		user.setFirstName(firstName);
 		user.setLastName(lastName);
 		user.setSex(sex);
 		user.setPassword(password);
-		user.setUserId(userId);
+		user.setId(id);
 		return userDAO.updateUser(user);
 	}
 
 	@Override
-	public User deleteUser(long userId) {
-		return userDAO.deleteUser(userId);
+	public User deleteUser(long id) {
+		return userDAO.deleteUser(id);
+	}
+
+	@Override
+	public boolean isUserPresent(long id) {
+		return userDAO.isUserPresent(id);
 	}
 
 

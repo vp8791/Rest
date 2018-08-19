@@ -38,42 +38,42 @@ public class UserRestResource {
 		userModal.setLastName("poks");
 		userModal.setPassword("passwd");
 		userModal.setSex("male");
-		userModal.setUserId(101);
+		userModal.setId(101);
 		return userModal;
 	}
 
 	@GET
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/user-info/{userId}")
-	public UserStatusModel getUser(@PathParam("userId") long userId) {
-		System.out.println("user-info:userId" + userId);
-		return getUserDetails(userId);
+	@Path("/user-info/{id}")
+	public UserStatusModel getUser(@PathParam("id") long id) {
+		System.out.println("user-id" + id);
+		return getUserDetails(id);
 	}
 
 	@DELETE
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/delete/{userId}")
-	public UserStatusModel deleteUser(@PathParam("userId") long userId) {
+	@Path("/delete/{id}")
+	public UserStatusModel deleteUser(@PathParam("id") long id) {
 		UserStatusModel status = new UserStatusModel();
 		try {
-			User deleteUser = userService.deleteUser(userId);
+			User deleteUser = userService.deleteUser(id);
 			UserModel userModal = new UserModel();
 			userModal.setEmail(deleteUser.getEmail());
 			userModal.setFirstName(deleteUser.getFirstName());
 			userModal.setLastName(deleteUser.getLastName());
 			userModal.setPassword(deleteUser.getPassword());
 			userModal.setSex(deleteUser.getSex());
-			userModal.setUserId(userId);
+			userModal.setId(id);
 			status.setUser(userModal);
 			status.setStatus(ResourceStatuses.RESOURCE_DELETE_SUCCESS);
-			status.setMessage("User Deleted successfully(" + userId +")");
+			status.setMessage("User Deleted successfully(" + id + ")");
 			return status;
 		} catch (Exception e) {
 			e.printStackTrace();
 			status.setStatus(ResourceStatuses.RESOURCE_DELETE_FAILED);
-			status.setMessage("Unable to delete user with Id(" + userId + "):" + e.getMessage());
+			status.setMessage("Unable to delete user with Id(" + id + "):" + e.getMessage());
 		}
 		return status;
 	}
@@ -83,7 +83,7 @@ public class UserRestResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/create-user")
 	public UserStatusModel createUser(UserModel userModel) {
-		return updateOrInsert(true, userModel);
+		return insertUser(userModel);
 	}
 
 	@PUT
@@ -94,13 +94,18 @@ public class UserRestResource {
 		UserStatusModel status = new UserStatusModel();
 
 		try {
-			status = getUserDetails(userModel.getUserId());
-			if (status.getStatus() == ResourceStatuses.RESOURCE_NOT_FOUND) {
-				UserStatusModel insertUser = updateOrInsert(true, userModel);
+			boolean isUserExists = isUserPresent(userModel.getId());
+			if (!isUserExists) {
+				UserStatusModel insertUser = insertUser(userModel);
 				return insertUser;
-			} else if (status.getStatus() == ResourceStatuses.RESOURCE_FOUND) {
-				UserStatusModel updateUser = updateOrInsert(false, userModel);
+			} else if (isUserExists) {
+				status = getUserDetails(userModel.getId());
+				UserStatusModel updateUser = updateUser(userModel);
 				return updateUser;
+			} else {
+				UserStatusModel updateUser = new UserStatusModel();
+				status.setStatus(ResourceStatuses.RESOURCE_UNKNOWN_ERROR);
+				status.setMessage("Unknow Error while Put operation of (" + userModel + ")");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -111,54 +116,62 @@ public class UserRestResource {
 		return status;
 	}
 
-	private UserStatusModel updateOrInsert(boolean isCreate, UserModel userModal) {
+	private UserStatusModel insertUser(UserModel userModel) {
 		UserStatusModel status = new UserStatusModel();
 		User user = null;
-		if (isCreate) {
-			try {
-				user = userService.addUser(userModal.getFirstName(), userModal.getLastName(), userModal.getEmail(),
-						userModal.getSex(), userModal.getPassword());
-				userModal.setEmail(user.getEmail());
-				userModal.setFirstName(user.getFirstName());
-				userModal.setLastName(user.getLastName());
-				userModal.setSex(user.getSex());
-				userModal.setUserId(user.getUserId());
-				status.setUser(userModal);
-				status.setStatus(ResourceStatuses.RESOURCE_ADD_SUCCESS);
-				status.setMessage("User Created Successfully:" + userModal);
+		try {
+			user = userService.addUser(userModel.getFirstName(), userModel.getLastName(), userModel.getEmail(),
+					userModel.getSex(), userModel.getPassword());
+			userModel.setEmail(user.getEmail());
+			userModel.setFirstName(user.getFirstName());
+			userModel.setLastName(user.getLastName());
+			userModel.setSex(user.getSex());
+			userModel.setId(user.getId());
+			status.setUser(userModel);
+			status.setStatus(ResourceStatuses.RESOURCE_ADD_SUCCESS);
+			status.setMessage("User Created Successfully:(" + user.getId() + ")");
 
-			} catch (Exception e) {
-				e.printStackTrace();
-				status.setStatus(ResourceStatuses.RESOURCE_ADD_FAILED);
-				status.setMessage("Error in Creating user:" + e.getMessage());
-			}
-		} else { // Update Resource
-			try {
-				user = userService.updateUser(userModal.getFirstName(), userModal.getLastName(), userModal.getEmail(),
-						userModal.getSex(), userModal.getPassword(), userModal.getUserId());
-				userModal.setEmail(user.getEmail());
-				userModal.setFirstName(user.getFirstName());
-				userModal.setLastName(user.getLastName());
-				userModal.setSex(user.getSex());
-				userModal.setUserId(user.getUserId());
-				status.setUser(userModal);
-				status.setStatus(ResourceStatuses.RESOURCE_UPDATE_SUCCESS);
-				status.setMessage("User Updated Successfully:" + userModal);
-				return status;
-			} catch (Exception e) {
-				e.printStackTrace();
-				status.setStatus(ResourceStatuses.RESOURCE_UPDATE_FAILED);
-				status.setMessage("Error in Updating user " + e.getMessage());
-			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			status.setStatus(ResourceStatuses.RESOURCE_ADD_FAILED);
+			status.setMessage("Error in Creating user:(" + userModel + ")" + e.getMessage());
 		}
 		return status;
 	}
 
-	private UserStatusModel getUserDetails(long userId) {
-		System.out.println("user-info:userId" + userId);
+	private UserStatusModel updateUser(UserModel userModel) {
+		UserStatusModel status = new UserStatusModel();
+		User user = null;
+			try {
+				user = userService.updateUser(userModel.getFirstName(), userModel.getLastName(), userModel.getEmail(),
+						userModel.getSex(), userModel.getPassword(), userModel.getId());
+				userModel.setEmail(user.getEmail());
+				userModel.setFirstName(user.getFirstName());
+				userModel.setLastName(user.getLastName());
+				userModel.setSex(user.getSex());
+				userModel.setId(user.getId());
+				status.setUser(userModel);
+				status.setStatus(ResourceStatuses.RESOURCE_UPDATE_SUCCESS);
+				status.setMessage("User Updated Successfully:" + userModel);
+				return status;
+			} catch (Exception e) {
+				e.printStackTrace();
+				status.setStatus(ResourceStatuses.RESOURCE_UPDATE_FAILED);
+				status.setMessage("Error in Updating user(" + userModel.getId() + ")" + e.getMessage());
+			}
+		return status;
+	}
+
+	
+	private boolean isUserPresent(long id) {
+		return userService.isUserPresent(id);
+	}
+	
+	private UserStatusModel getUserDetails(long id) {
+		System.out.println("user-info:id" + id);
 		UserStatusModel userStatus = new UserStatusModel();
 		try {
-			User user = userService.getUser(userId);
+			User user = userService.getUser(id);
 			UserModel userModal = new UserModel();
 			if (user != null) {
 				userStatus.setStatus(200);
@@ -167,7 +180,7 @@ public class UserRestResource {
 				userModal.setFirstName(user.getFirstName());
 				userModal.setLastName(user.getLastName());
 				userModal.setSex(user.getSex());
-				userModal.setUserId(userId);
+				userModal.setId(id);
 				userStatus.setUser(userModal);
 				userStatus.setStatus(ResourceStatuses.RESOURCE_FOUND);
 				userStatus.setMessage("User Found");

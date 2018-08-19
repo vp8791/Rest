@@ -15,5 +15,6 @@ public interface ResourceStatuses {
 	public static int RESOURCE_DELETE_FAILED = 207;
 	
 	public static int RESOURCE_DB_FAILED= 208;
+	public static int RESOURCE_UNKNOWN_ERROR= 209;
 
 }

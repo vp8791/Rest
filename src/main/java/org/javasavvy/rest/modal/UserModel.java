@@ -7,7 +7,7 @@ public class UserModel {
 	private String email;
 	private String sex;
 	private String password;
-	private long userId;
+	private long id;
 	
 	public String getFirstName() {
 		return firstName;
@@ -33,11 +33,12 @@ public class UserModel {
 	public void setSex(String sex) {
 		this.sex = sex;
 	}
-	public long getUserId() {
-		return userId;
+
+	public long getId() {
+		return id;
 	}
-	public void setUserId(long userId) {
-		this.userId = userId;
+	public void setId(long id) {
+		this.id = id;
 	}
 	public String getPassword() {
 		return password;
@@ -48,7 +49,7 @@ public class UserModel {
 	@Override
 	public String toString() {
 		return "UserModel [firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", sex=" + sex
-				+ ", password=" + password + ", userId=" + userId + "]";
+				+ ", password=" + password + ", id=" + id + "]";
 	}
 	
 	

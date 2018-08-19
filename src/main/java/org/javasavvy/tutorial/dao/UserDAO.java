@@ -8,8 +8,9 @@ public interface UserDAO {
 
 	
 	public User addUser(User user);
-	public User getUser(long userId);
+	public User getUser(long id);
+	public boolean isUserPresent(long id);
 	public User getUser(String email);
 	public User updateUser(User user);
-	public User deleteUser(long userId);
+	public User deleteUser(long id);
 }

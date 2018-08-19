@@ -18,13 +18,13 @@ import javax.persistence.TemporalType;
 @Entity
 public class User implements Serializable {
 	
+
 	private static final long serialVersionUID = 1020230L;
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "REST_SEQUENCE_GENERATOR")
-	@SequenceGenerator(name="REST_SEQUENCE_GENERATOR", sequenceName = "REST_SEQUENCE_GENERATOR")
-	@Column(name = "id", updatable = false, nullable = false)
-	private long userId;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CUST_SEQ")
+    @SequenceGenerator(sequenceName = "REST_SEQUENCE_GENERATOR", allocationSize = 1, name = "CUST_SEQ")
+	private Long  id;
 	
 	private String firstName;
 	private String lastName;
@@ -38,13 +38,6 @@ public class User implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedDate;
 
-	public long getUserId() {
-		return userId;
-	}
-
-	public void setUserId(long userId) {
-		this.userId = userId;
-	}
 
 	public String getFirstName() {
 		return firstName;
@@ -103,6 +96,18 @@ public class User implements Serializable {
 	}
 	
 	
-	
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", sex=" + sex
+				+ ", email=" + email + ", password=" + password + "]";
+	}
 
 }
